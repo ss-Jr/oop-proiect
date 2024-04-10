@@ -1,11 +1,6 @@
-# Nu primesc notă pentru că nu am pus titlu și descriere
+# Pacanea-FMI
 
-### Important!
-Aveți voie cu cod generat de modele de limbaj la care nu ați contribuit semnificativ doar în folder-ul `generated`.
-Codul generat pus "ca să fie"/pe care nu îl înțelegeți se punctează doar pentru puncte bonus, doar în contextul
-în care oferă funcționalități ajutătoare și doar dacă are sens.
-
-O cerință nu se consideră îndeplinită dacă este realizată doar ca o serie de apeluri proxy către cod generat.
+Pacanea-FMI este un nou casino care ofera o gama variata de aparate la care poti juca tot felul de jocuri de noroc. Acestea ofera o sansa de castig ridicata si o satisfactie tuturor studentilor din candrul facultatii, dar si al universitatii.
 
 ### Cerințe modele de limbaj la nivel de semestru
 - [ ] minim o funcționalitate majoritar doar cu LLM
