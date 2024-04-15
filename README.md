@@ -1,6 +1,8 @@
 # Pacanea-FMI
 
-Pacanea-FMI este un nou casino care ofera o gama variata de aparate la care poti juca tot felul de jocuri de noroc. Acestea ofera o sansa de castig ridicata si o satisfactie tuturor studentilor din candrul facultatii, dar si al universitatii.
+Pacanea-FMI este un nou casino care ofera o gama variata de aparate la care poti juca tot felul de jocuri de noroc. Acestea ofera o sansa de castig ridicata si o satisfactie tuturor studentilor din cadrul facultatii, dar si al universitatii.
+
+P.S.: Acest proiect este pur informativ. Nu incurajam acest mod de entertainment.
 
 ### Cerințe modele de limbaj la nivel de semestru
 - [ ] minim o funcționalitate majoritar doar cu LLM
