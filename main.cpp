@@ -1,3 +1,4 @@
+#include <array>
 #include <iostream>
 #include <vector>
 #include <SFML/Graphics.hpp>
@@ -14,6 +15,7 @@ private:
   std::string text_content;
 
 public:
+  Button() {}
   Button(float x, float y, float width, float height, sf::Color color, sf::Color hoverColor, int pos_x = 0, int pos_y = 0, std::string text_content_ = "Button")
       : rect(sf::Vector2f(width, height)), normalColor(color), hoverColor(hoverColor), text_content(text_content_)
   {
@@ -58,6 +60,25 @@ public:
   /*void draw(sf::RenderWindow& window) {
       window.draw(rect);
   }*/
+  friend std::ostream &operator<<(std::ostream &os, const Button &b)
+  {
+    os << b.text_content;
+    return os;
+  }
+};
+
+class Buttons {
+public:
+  std::map<std::string, Button> buttons;
+
+  Buttons(std::map<std::string, Button> m) : buttons(m) {}
+  friend std::ostream &operator<<(std::ostream &os, const Buttons &b)
+  {
+    os << "buttons";
+    return os;
+  }
+
+  
 };
 
 class Player
@@ -70,7 +91,7 @@ public:
   Player(std::string n = "Player", double ba = 0) : name(n), betting_amount(ba) {}
   friend std::ostream &operator<<(std::ostream &os, const Player &p)
   {
-    os << p.name;
+    os << p.name << ' ' << p.betting_amount;
     return os;
   }
 };
@@ -79,32 +100,29 @@ class Game
 {
 private:
   std::string name;
-  std::vector<double> bet_amounts;
+  static std::vector<double> bet_amounts;
   // const std::vector<std::string> choices = {"spin", "double", "cashout", "add_amount"};
-  bool double_choice;
+  //bool double_choice;
 
-  sf::Texture g_texture;
-  sf::Vector2u g_texture_size;
-  sf::Sprite g_sprite;
-  Button button;
+  sf::Texture game_texture;
+  sf::Vector2u game_texture_size;
+  sf::Sprite game_sprite;
 
-  const int numReels = 3;
-  char reels[3];
-  char symbols[4] = {'a', 'b', 'c', 'd'};
-  const int numSymbols = 4;
+  std::array<char, 3> reels;
+  std::array<char, 4> symbols = {'a', 'b', 'c', 'd'};
 
 public:
-  Game(std::string name_ = "Slot Game") : name(name_), button(Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan))
+  Game(std::string name_ = "Slot Game") : name(name_)
   {
-    if (!g_texture.loadFromFile("slot.png"))
+    if (!game_texture.loadFromFile("slot.png"))
     {
       std::cout << "Could not load game textures.\n";
       // return EXIT_FAILURE;
     }
     else
     {
-      g_texture_size = g_texture.getSize();
-      g_sprite = sf::Sprite(g_texture);
+      game_texture_size = game_texture.getSize();
+      game_sprite = sf::Sprite(game_texture);
     }
   }
 
@@ -112,6 +130,9 @@ public:
   {
     this->name = other.name;
     this->bet_amounts = other.bet_amounts;
+    this->game_texture = other.game_texture;
+    this->game_texture_size = other.game_texture_size;
+    this->game_sprite = other.game_sprite;
 
     return *this;
   }
@@ -124,8 +145,20 @@ public:
 
   void spin()
   {
-    for (int i = 0; i < numReels; ++i)
-      reels[i] = symbols[rand() % numSymbols];
+    int chance = rand() % 100;
+    for (int i = 0; i < reels.size(); ++i)
+      reels[i] = symbols[rand() % symbols.size()];
+    if(chance < 80) {
+      while(!checkWin()) {
+        for (int i = 0; i < reels.size(); ++i)
+          reels[i] = symbols[rand() % symbols.size()];
+      }
+    } else {
+      while(checkWin()) {
+        for (int i = 0; i < reels.size(); ++i)
+          reels[i] = symbols[rand() % symbols.size()];
+      }
+    }
   }
 
   bool checkWin()
@@ -136,7 +169,7 @@ public:
   void displayResult()
   {
     std::cout << "Reels: ";
-    for (int i = 0; i < numReels; ++i)
+    for (int i = 0; i < reels.size(); ++i)
       std::cout << reels[i] << ' ';
     std::cout << '\n';
     if (checkWin())
@@ -149,25 +182,13 @@ public:
     }
   }
 
-  void run(sf::RenderWindow &window, Button &button, Button &back_button)
+  void run(sf::RenderWindow &window, Buttons &buttons)
   {
-    g_sprite = sf::Sprite(g_texture);
-    g_sprite.setScale(window.getSize().x / (float)g_texture_size.x, window.getSize().y / (float)g_texture_size.y);
-    bool was = false;
+    game_sprite = sf::Sprite(game_texture);
+    game_sprite.setScale(window.getSize().x / (float)game_texture_size.x, window.getSize().y / (float)game_texture_size.y);
     while (window.isOpen())
     {
       sf::Event event;
-      bool is = (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space));
-      bool is2 = (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V));
-      if (!was && is)
-      {
-        std::cout << "Spin!\n";
-        spin();
-        while (checkWin() && !is2)
-          spin();
-        displayResult();
-      }
-      was = is;
       while (window.pollEvent(event))
       {
         switch (event.type)
@@ -179,14 +200,14 @@ public:
         case sf::Event::MouseButtonPressed:
           if (event.mouseButton.button == sf::Mouse::Left)
           {
-            if (button.isMouseOver(window))
+            if (buttons.buttons["spin"].isMouseOver(window))
             {
               std::cout << "Spin!\n";
               spin();
               displayResult();
               // machines[0].run();
             }
-            else if (back_button.isMouseOver(window))
+            else if (buttons.buttons["return_machine"].isMouseOver(window))
             {
               std::cout << "Return to the machine window!\n";
               return;
@@ -196,11 +217,12 @@ public:
             break;
           }
         }
-        button.update(window);
+        buttons.buttons["spin"].update(window);
+        buttons.buttons["return_machine"].update(window);
         window.clear();
-        window.draw(g_sprite);
-        window.draw(button);
-        window.draw(back_button);
+        window.draw(game_sprite);
+        window.draw(buttons.buttons["spin"]);
+        window.draw(buttons.buttons["return_machine"]);
         // window.draw(button.text);
         window.display();
       }
@@ -209,7 +231,10 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const Game &g)
   {
-    os << g.name;
+    os << g.name << "\nBet amounts:\n";
+    for(auto x : bet_amounts) {
+      os << x << ' ';
+    }
     return os;
   }
 };
@@ -220,22 +245,21 @@ private:
   std::string name;
   std::vector<Game> games;
 
-  sf::Texture m_texture;
-  sf::Vector2u m_texture_size;
-  sf::Sprite m_sprite;
-  Button button;
+  sf::Texture machine_texture;
+  sf::Vector2u machine_texture_size;
+  sf::Sprite machine_sprite;
+  //Button button;
 
 public:
-  Machine(std::string name_ = "Slot Machine") : name(name_), games(std::vector<Game>(1, Game("Slot Game"))), button(Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan))
-  {
-    if (!m_texture.loadFromFile("machine.png"))
+  Machine(std::string name_ = "Slot Machine") : name(name_), games(std::vector<Game>(1, Game("Slot Game"))) {
+    if (!machine_texture.loadFromFile("machine.png"))
     {
       std::cout << "Could not load slot machine textures.\n";
       // return EXIT_FAILURE;
     }
     else
     {
-      m_texture_size = m_texture.getSize();
+      machine_texture_size = machine_texture.getSize();
     }
   }
 
@@ -243,16 +267,19 @@ public:
   {
     this->name = other.name;
     this->games = other.games;
+    this->machine_texture = other.machine_texture;
+    this->machine_texture_size = other.machine_texture_size;
+    this->machine_sprite = other.machine_sprite;
 
     return *this;
   }
 
   ~Machine() {}
 
-  void run(sf::RenderWindow &window, Button &button, Button &back_button)
+  void run(sf::RenderWindow &window, Buttons &buttons)
   {
-    m_sprite = sf::Sprite(m_texture);
-    m_sprite.setScale(window.getSize().x / (float)m_texture_size.x, window.getSize().y / (float)m_texture_size.y);
+    machine_sprite = sf::Sprite(machine_texture);
+    machine_sprite.setScale(window.getSize().x / (float)machine_texture_size.x, window.getSize().y / (float)machine_texture_size.y);
     while (window.isOpen())
     {
       sf::Event event;
@@ -267,12 +294,12 @@ public:
         case sf::Event::MouseButtonPressed:
           if (event.mouseButton.button == sf::Mouse::Left)
           {
-            if (button.isMouseOver(window))
+            if (buttons.buttons["enter_game"].isMouseOver(window))
             {
-              std::cout << "Button Clicked in machine!\n";
-              games[0].run(window, button, back_button);
+              std::cout << "Entered the game!\n";
+              games[0].run(window, buttons);
             }
-            else if (back_button.isMouseOver(window))
+            else if (buttons.buttons["return_casino"].isMouseOver(window))
             {
               std::cout << "Return to the casino window!\n";
               return;
@@ -282,11 +309,12 @@ public:
             break;
           }
         }
-        button.update(window);
+        buttons.buttons["enter_game"].update(window);
+        buttons.buttons["return_casino"].update(window);
         window.clear();
-        window.draw(m_sprite);
-        window.draw(button);
-        window.draw(back_button);
+        window.draw(machine_sprite);
+        window.draw(buttons.buttons["enter_game"]);
+        window.draw(buttons.buttons["return_casino"]);
         // window.draw(button.text);
         window.display();
       }
@@ -308,39 +336,42 @@ private:
   std::vector<Player> players;
 
   // sf::RenderWindow& window;
-  sf::Texture c_texture;
-  sf::Vector2u c_texture_size;
-  sf::Sprite c_sprite;
-  Button button;
+  sf::Texture casino_texture;
+  sf::Vector2u casino_texture_size;
+  sf::Sprite casino_sprite;
+  //Button button;
 
 public:
-  Casino(std::string name_ = "Casino") : /*window(window_),*/ name(name_), machines(std::vector<Machine>(1, Machine("Slot Machine"))), players(std::vector<Player>(1, Player("Player-1", 2000))), button(Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan))
+  Casino(std::string name_ = "Casino") : /*window(window_),*/ name(name_), machines(std::vector<Machine>(1, Machine("Slot Machine"))), players(std::vector<Player>(1, Player("Player-1", 2000)))
   {
-    if (!c_texture.loadFromFile("app.png"))
+    if (!casino_texture.loadFromFile("app.png"))
     {
       std::cout << "Could not load casino textures.\n";
       // return EXIT_FAILURE;
     }
     else
     {
-      c_texture_size = c_texture.getSize();
+      casino_texture_size = casino_texture.getSize();
     }
   }
 
-  /*Casino operator=(const Casino& other) {
+  Casino operator=(const Casino& other) {
     this->name = other.name;
-    //this->machines = other.machines;
+    this->machines = other.machines;
     this->players = other.players;
+    this->casino_texture = other.casino_texture;
+    this->casino_texture_size = other.casino_texture_size;
+    this->casino_sprite = other.casino_sprite;
 
     return *this;
-  }*/
+  }
 
   ~Casino() {}
 
-  void run(sf::RenderWindow &window, Button &button, Button &back_button)
+  void run(sf::RenderWindow &window, Buttons &buttons)
   {
-    c_sprite.setTexture(c_texture);
-    c_sprite.setScale(window.getSize().x / (float)c_texture_size.x, window.getSize().y / (float)c_texture_size.y);
+    casino_sprite.setTexture(casino_texture);
+    casino_sprite.setScale(window.getSize().x / (float)casino_texture_size.x, window.getSize().y / (float)casino_texture_size.y);
     while (window.isOpen())
     {
       sf::Event event;
@@ -355,12 +386,12 @@ public:
         case sf::Event::MouseButtonPressed:
           if (event.mouseButton.button == sf::Mouse::Left)
           {
-            if (button.isMouseOver(window))
+            if (buttons.buttons["enter_machine"].isMouseOver(window))
             {
-              std::cout << "Button Clicked in casino!\n";
-              machines[0].run(window, button, back_button);
+              std::cout << "Entered in machine!\n";
+              machines[0].run(window, buttons);
             }
-            else if (back_button.isMouseOver(window))
+            else if (buttons.buttons["return_app"].isMouseOver(window))
             {
               std::cout << "Return to the app window!\n";
               return;
@@ -371,12 +402,12 @@ public:
           break;
         }
       }
-      button.update(window);
-      back_button.update(window);
+      buttons.buttons["enter_machine"].update(window);
+      buttons.buttons["return_app"].update(window);
       window.clear();
-      window.draw(c_sprite);
-      window.draw(button);
-      window.draw(back_button);
+      window.draw(casino_sprite);
+      window.draw(buttons.buttons["enter_machine"]);
+      window.draw(buttons.buttons["return_app"]);
       // window.draw(button.text);
       window.display();
     }
@@ -396,29 +427,39 @@ private:
   std::vector<Casino> casinos;
 
   sf::RenderWindow window;
-  sf::Texture a_texture;
-  sf::Vector2u a_texture_size;
-  sf::Sprite a_sprite;
-  Button button, back_button;
+  sf::Texture app_texture;
+  sf::Vector2u app_texture_size;
+  sf::Sprite app_sprite;
+  //Button button, back_button;
+  // Buttons buttons;
 
 public:
-  Application(std::string name_ = "Pacanea") : window(sf::VideoMode(800, 600), name, sf::Style::Default), name(name_), casinos(std::vector<Casino>(1, Casino("Casino"))), button(Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan, 120, 120)), back_button(Button(10, 10, 200, 50, sf::Color::Blue, sf::Color::Cyan, 30, 30, "Go back"))
-  {
-    if (!a_texture.loadFromFile("app.png"))
+  Application(std::string name_ = "Pacanea") : window(sf::VideoMode(800, 600), name, sf::Style::Default), name(name_), casinos(std::vector<Casino>(1, Casino("Casino"))) {
+    if (!app_texture.loadFromFile("app.png"))
     {
       std::cout << "Could not load app textures.\n";
       // return EXIT_FAILURE;
     }
     else
     {
-      a_texture_size = a_texture.getSize();
+      app_texture_size = app_texture.getSize();
     }
   }
 
   void run()
   {
-    a_sprite.setTexture(a_texture);
-    a_sprite.setScale(window.getSize().x / (float)a_texture_size.x, window.getSize().y / (float)a_texture_size.y);
+    Buttons buttons = Buttons({
+    {"exit_app", Button(10, 10, 200, 50, sf::Color::Blue, sf::Color::Cyan, 30, 30, "EXIT")},
+    {"enter_casino", Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan, 120, 120, "Enter Casino")},
+    {"return_app", Button(10, 10, 200, 50, sf::Color::Blue, sf::Color::Cyan, 30, 30, "Return to App")},
+    {"enter_machine", Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan, 120, 120, "Enter Machine")},
+    {"return_casino", Button(10, 10, 200, 50, sf::Color::Blue, sf::Color::Cyan, 30, 30, "Return to Casino")},
+    {"enter_game", Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan, 120, 120, "Enter Game")},
+    {"return_machine", Button(10, 10, 200, 50, sf::Color::Blue, sf::Color::Cyan, 30, 30, "Return to machine")},
+    {"spin", Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan, 120, 120, "Spin")},
+    });
+    app_sprite.setTexture(app_texture);
+    app_sprite.setScale(window.getSize().x / (float)app_texture_size.x, window.getSize().y / (float)app_texture_size.y);
     // window.create(sf::VideoMode(800, 600), name, sf::Style::Default);
     window.setFramerateLimit(60);
     while (window.isOpen())
@@ -433,10 +474,18 @@ public:
           break;
 
         case sf::Event::MouseButtonPressed:
-          if (event.mouseButton.button == sf::Mouse::Left && button.isMouseOver(window))
+          if (event.mouseButton.button == sf::Mouse::Left)
           {
-            std::cout << "Button Clicked!" << std::endl;
-            casinos[0].run(window, button, back_button);
+            if (buttons.buttons["enter_casino"].isMouseOver(window))
+            {
+              std::cout << "Entered in casino!\n";
+              casinos[0].run(window, buttons);
+            }
+            else if (buttons.buttons["exit_app"].isMouseOver(window))
+            {
+              std::cout << "Closed the application!\n";
+              return;
+            }
           }
 
         default:
@@ -444,15 +493,16 @@ public:
         }
       }
       // button.update(window);
+      buttons.buttons["enter_casino"].update(window);
+      buttons.buttons["exit_app"].update(window);
       window.clear();
-      window.draw(a_sprite);
-      window.draw(button);
-      // window.draw(button.text);
+      window.draw(app_sprite);
+      window.draw(buttons.buttons["enter_casino"]);
+      window.draw(buttons.buttons["exit_app"]);
+      // window.draw(buttons.buttons["enter_casino"].text);
       window.display();
     }
   }
-
-  ~Application() {}
 
   friend std::ostream &operator<<(std::ostream &os, const Application &a)
   {
