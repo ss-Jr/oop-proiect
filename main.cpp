@@ -16,7 +16,7 @@ private:
 public:
   Button() {}
   //Button(sf::Font& font_) : font(font_) {}
-  Button(sf::Font& font_, float x, float y, float width, float height, sf::Color color, sf::Color hoverColor, int pos_x = 0, int pos_y = 0, const std::string text_content_ = "Button")
+  Button(sf::Font& font_, float x, float y, float width, float height, sf::Color color, sf::Color hoverColor, int pos_x = 0, int pos_y = 0, const std::string& text_content_ = "Button")
       : rect(sf::Vector2f(width, height)), normalColor(color), hoverColor(hoverColor), text_content(text_content_)
   {
     /*if (!font.loadFromFile("Arial.ttf"))
@@ -71,7 +71,7 @@ class Buttons {
 public:
   std::map<std::string, Button> buttons;
 
-  Buttons(const std::map<std::string, Button> m) : buttons(m) {}
+  Buttons(const std::map<std::string, Button>& m) : buttons(m) {}
   friend std::ostream &operator<<(std::ostream &os, const Buttons &b)
   {
     os << "This project has " << b.buttons.size() << " buttons\n";
@@ -112,7 +112,7 @@ private:
   std::array<char, 4> symbols = {'a', 'b', 'c', 'd'};
 
 public:
-  Game(const std::string name_ = "Slot Game") : name(name_)
+  Game(const std::string& name_ = "Slot Game") : name(name_)
   {
     if (!game_texture.loadFromFile("game.jpg"))
     {
@@ -169,8 +169,9 @@ public:
 
   void displayResult()
   {
+    int reels_size = reels.size();
     std::cout << "Reels: ";
-    for (int i = 0; i < reels.size(); ++i)
+    for (int i = 0; i < reels_size; ++i)
       std::cout << reels[i] << ' ';
     std::cout << '\n';
     if (checkWin())
@@ -252,7 +253,7 @@ private:
   //Button button;
 
 public:
-  Machine(const std::string name_ = "Slot Machine") : name(name_), games(std::vector<Game>(1, Game("Slot Game"))) {
+  Machine(const std::string& name_ = "Slot Machine") : name(name_), games(std::vector<Game>(1, Game("Slot Game"))) {
     if (!machine_texture.loadFromFile("games.jpg"))
     {
       std::cout << "Could not load slot machine textures.\n";
@@ -343,7 +344,7 @@ private:
   //Button button;
 
 public:
-  Casino(const std::string name_ = "Casino") : /*window(window_),*/ name(name_), machines(std::vector<Machine>(1, Machine("Slot Machine"))), players(std::vector<Player>(1, Player("Player-1", 2000)))
+  Casino(const std::string& name_ = "Casino") : /*window(window_),*/ name(name_), machines(std::vector<Machine>(1, Machine("Slot Machine"))), players(std::vector<Player>(1, Player("Player-1", 2000)))
   {
     if (!casino_texture.loadFromFile("machine.jpg"))
     {
@@ -435,7 +436,7 @@ private:
   // Buttons buttons;
 
 public:
-  Application(const std::string name_ = "Pacanea") : window(sf::VideoMode(800, 600), name_, sf::Style::Default), name(name_), casinos(std::vector<Casino>(1, Casino("Casino"))) {
+  Application(const std::string& name_ = "Pacanea") : name(name_), window(sf::VideoMode(800, 600), name_, sf::Style::Default), casinos(std::vector<Casino>(1, Casino("Casino"))) {
     if (!app_texture.loadFromFile("app.jpeg"))
     {
       std::cout << "Could not load app textures.\n";
