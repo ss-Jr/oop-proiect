@@ -7,7 +7,6 @@ class Button : public sf::Drawable
 {
 private:
   sf::Text text;
-  sf::Font font;
   sf::RectangleShape rect;
   sf::Color normalColor;
   sf::Color hoverColor;
@@ -16,20 +15,21 @@ private:
 
 public:
   Button() {}
-  Button(float x, float y, float width, float height, sf::Color color, sf::Color hoverColor, int pos_x = 0, int pos_y = 0, std::string text_content_ = "Button")
+  //Button(sf::Font& font_) : font(font_) {}
+  Button(sf::Font& font_, float x, float y, float width, float height, sf::Color color, sf::Color hoverColor, int pos_x = 0, int pos_y = 0, const std::string text_content_ = "Button")
       : rect(sf::Vector2f(width, height)), normalColor(color), hoverColor(hoverColor), text_content(text_content_)
   {
-    if (!font.loadFromFile("Arial.ttf"))
+    /*if (!font.loadFromFile("Arial.ttf"))
     {
       std::cout << "Could not load font.\n";
       // return EXIT_FAILURE;
     }
     else
-    {
-      text = sf::Text(text_content, font, 24);
+    {*/
+      text = sf::Text(text_content, font_, 24);
       text.setFillColor(sf::Color::White);
       text.setPosition(pos_x, pos_y);
-    }
+    //}
     rect.setPosition(x, y);
     rect.setFillColor(normalColor);
   }
@@ -71,10 +71,10 @@ class Buttons {
 public:
   std::map<std::string, Button> buttons;
 
-  Buttons(std::map<std::string, Button> m) : buttons(m) {}
+  Buttons(const std::map<std::string, Button> m) : buttons(m) {}
   friend std::ostream &operator<<(std::ostream &os, const Buttons &b)
   {
-    os << "buttons";
+    os << "This project has " << b.buttons.size() << " buttons\n";
     return os;
   }
 
@@ -88,7 +88,7 @@ private:
   double betting_amount;
 
 public:
-  Player(std::string n = "Player", double ba = 0) : name(n), betting_amount(ba) {}
+  Player(const std::string n = "Player", double ba = 0) : name(n), betting_amount(ba) {}
   friend std::ostream &operator<<(std::ostream &os, const Player &p)
   {
     os << p.name << ' ' << p.betting_amount;
@@ -112,9 +112,9 @@ private:
   std::array<char, 4> symbols = {'a', 'b', 'c', 'd'};
 
 public:
-  Game(std::string name_ = "Slot Game") : name(name_)
+  Game(const std::string name_ = "Slot Game") : name(name_)
   {
-    if (!game_texture.loadFromFile("slot.png"))
+    if (!game_texture.loadFromFile("game.jpg"))
     {
       std::cout << "Could not load game textures.\n";
       // return EXIT_FAILURE;
@@ -126,7 +126,7 @@ public:
     }
   }
 
-  Game operator=(const Game &other)
+  Game &operator=(const Game &other)
   {
     this->name = other.name;
     this->bet_amounts = other.bet_amounts;
@@ -146,16 +146,17 @@ public:
   void spin()
   {
     int chance = rand() % 100;
-    for (int i = 0; i < reels.size(); ++i)
+    int reels_size = reels.size();
+    for (int i = 0; i < reels_size; ++i)
       reels[i] = symbols[rand() % symbols.size()];
     if(chance < 80) {
       while(!checkWin()) {
-        for (int i = 0; i < reels.size(); ++i)
+        for (int i = 0; i < reels_size; ++i)
           reels[i] = symbols[rand() % symbols.size()];
       }
     } else {
       while(checkWin()) {
-        for (int i = 0; i < reels.size(); ++i)
+        for (int i = 0; i < reels_size; ++i)
           reels[i] = symbols[rand() % symbols.size()];
       }
     }
@@ -251,8 +252,8 @@ private:
   //Button button;
 
 public:
-  Machine(std::string name_ = "Slot Machine") : name(name_), games(std::vector<Game>(1, Game("Slot Game"))) {
-    if (!machine_texture.loadFromFile("machine.png"))
+  Machine(const std::string name_ = "Slot Machine") : name(name_), games(std::vector<Game>(1, Game("Slot Game"))) {
+    if (!machine_texture.loadFromFile("games.jpg"))
     {
       std::cout << "Could not load slot machine textures.\n";
       // return EXIT_FAILURE;
@@ -263,7 +264,7 @@ public:
     }
   }
 
-  Machine operator=(const Machine &other)
+  Machine &operator=(const Machine &other)
   {
     this->name = other.name;
     this->games = other.games;
@@ -342,9 +343,9 @@ private:
   //Button button;
 
 public:
-  Casino(std::string name_ = "Casino") : /*window(window_),*/ name(name_), machines(std::vector<Machine>(1, Machine("Slot Machine"))), players(std::vector<Player>(1, Player("Player-1", 2000)))
+  Casino(const std::string name_ = "Casino") : /*window(window_),*/ name(name_), machines(std::vector<Machine>(1, Machine("Slot Machine"))), players(std::vector<Player>(1, Player("Player-1", 2000)))
   {
-    if (!casino_texture.loadFromFile("app.png"))
+    if (!casino_texture.loadFromFile("machine.jpg"))
     {
       std::cout << "Could not load casino textures.\n";
       // return EXIT_FAILURE;
@@ -355,7 +356,7 @@ public:
     }
   }
 
-  Casino operator=(const Casino& other) {
+  Casino &operator=(const Casino& other) {
     this->name = other.name;
     this->machines = other.machines;
     this->players = other.players;
@@ -434,8 +435,8 @@ private:
   // Buttons buttons;
 
 public:
-  Application(std::string name_ = "Pacanea") : window(sf::VideoMode(800, 600), name, sf::Style::Default), name(name_), casinos(std::vector<Casino>(1, Casino("Casino"))) {
-    if (!app_texture.loadFromFile("app.png"))
+  Application(const std::string name_ = "Pacanea") : window(sf::VideoMode(800, 600), name_, sf::Style::Default), name(name_), casinos(std::vector<Casino>(1, Casino("Casino"))) {
+    if (!app_texture.loadFromFile("app.jpeg"))
     {
       std::cout << "Could not load app textures.\n";
       // return EXIT_FAILURE;
@@ -448,15 +449,22 @@ public:
 
   void run()
   {
+    sf::Font font;
+    if (!font.loadFromFile("Arial.ttf"))
+    {
+      std::cout << "Could not load font.\n";
+      return;
+      // return EXIT_FAILURE;
+    }
     Buttons buttons = Buttons({
-    {"exit_app", Button(10, 10, 200, 50, sf::Color::Blue, sf::Color::Cyan, 30, 30, "EXIT")},
-    {"enter_casino", Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan, 120, 120, "Enter Casino")},
-    {"return_app", Button(10, 10, 200, 50, sf::Color::Blue, sf::Color::Cyan, 30, 30, "Return to App")},
-    {"enter_machine", Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan, 120, 120, "Enter Machine")},
-    {"return_casino", Button(10, 10, 200, 50, sf::Color::Blue, sf::Color::Cyan, 30, 30, "Return to Casino")},
-    {"enter_game", Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan, 120, 120, "Enter Game")},
-    {"return_machine", Button(10, 10, 200, 50, sf::Color::Blue, sf::Color::Cyan, 30, 30, "Return to machine")},
-    {"spin", Button(100, 100, 200, 50, sf::Color::Blue, sf::Color::Cyan, 120, 120, "Spin")},
+    {"exit_app", Button(font, 10, 10, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 30, 30, "EXIT")},
+    {"enter_casino", Button(font, 100, 100, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 120, 120, "Enter Casino")},
+    {"return_app", Button(font, 10, 10, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 30, 30, "Return to App")},
+    {"enter_machine", Button(font, 100, 100, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 120, 120, "Enter Machine")},
+    {"return_casino", Button(font, 10, 10, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 30, 30, "Return to Casino")},
+    {"enter_game", Button(font, 100, 100, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 120, 120, "Enter Game")},
+    {"return_machine", Button(font, 10, 10, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 30, 30, "Return to machine")},
+    {"spin", Button(font, 100, 100, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 120, 120, "Spin")},
     });
     app_sprite.setTexture(app_texture);
     app_sprite.setScale(window.getSize().x / (float)app_texture_size.x, window.getSize().y / (float)app_texture_size.y);
