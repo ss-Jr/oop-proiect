@@ -71,7 +71,7 @@ class Buttons {
 public:
   std::map<std::string, Button> buttons;
 
-  Buttons(const std::map<std::string, Button>& m) : buttons(m) {}
+  explicit Buttons(const std::map<std::string, Button>& m) : buttons(m) {}
   friend std::ostream &operator<<(std::ostream &os, const Buttons &b)
   {
     os << "This project has " << b.buttons.size() << " buttons\n";
@@ -88,7 +88,7 @@ private:
   double betting_amount;
 
 public:
-  Player(const std::string n = "Player", double ba = 0) : name(n), betting_amount(ba) {}
+  Player(const std::string& n = "Player", double ba = 0) : name(n), betting_amount(ba) {}
   friend std::ostream &operator<<(std::ostream &os, const Player &p)
   {
     os << p.name << ' ' << p.betting_amount;
@@ -436,7 +436,7 @@ private:
   // Buttons buttons;
 
 public:
-  Application(const std::string& name_ = "Pacanea") : name(name_), window(sf::VideoMode(800, 600), name_, sf::Style::Default), casinos(std::vector<Casino>(1, Casino("Casino"))) {
+  Application(const std::string& name_ = "Pacanea") : name(name_), casinos(std::vector<Casino>(1, Casino("Casino"))), window(sf::VideoMode(800, 600), name_, sf::Style::Default) {
     if (!app_texture.loadFromFile("app.jpeg"))
     {
       std::cout << "Could not load app textures.\n";
