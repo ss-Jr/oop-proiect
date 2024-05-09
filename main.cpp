@@ -15,7 +15,6 @@ private:
 
 public:
   Button() {}
-  //Button(sf::Font& font_) : font(font_) {}
   Button(sf::Font& font_, float x, float y, float width, float height, sf::Color color, sf::Color hoverColor, int pos_x = 0, int pos_y = 0, const std::string& text_content_ = "Button")
       : rect(sf::Vector2f(width, height)), normalColor(color), hoverColor(hoverColor), text_content(text_content_)
   {
@@ -57,12 +56,21 @@ public:
     target.draw(rect, states);
     target.draw(text);
   }
-  /*void draw(sf::RenderWindow& window) {
-      window.draw(rect);
-  }*/
+  
+  Button &operator=(const Button &other)
+  {
+    this->text = other.text;
+    this->rect = other.rect;
+    this->normalColor = other.normalColor;
+    this->hoverColor = other.hoverColor;
+    this->text_content = other.text_content;
+
+    return *this;
+  }
+
   friend std::ostream &operator<<(std::ostream &os, const Button &b)
   {
-    os << b.text_content;
+    os << "This button has the text: " << b.text_content << ".\n";
     return os;
   }
 };
@@ -72,13 +80,18 @@ public:
   std::map<std::string, Button> buttons;
 
   explicit Buttons(const std::map<std::string, Button>& m) : buttons(m) {}
-  friend std::ostream &operator<<(std::ostream &os, const Buttons &b)
+
+  Buttons &operator=(const Buttons &other)
   {
-    os << "This project has " << b.buttons.size() << " buttons\n";
-    return os;
+    this->buttons = other.buttons;
+    return *this;
   }
 
-  
+  friend std::ostream &operator<<(std::ostream &os, const Buttons &b)
+  {
+    os << "This project has " << b.buttons.size() << " buttons.\n";
+    return os;
+  } 
 };
 
 class Player
@@ -89,9 +102,17 @@ private:
 
 public:
   Player(const std::string& n = "Player", double ba = 0) : name(n), betting_amount(ba) {}
+
+  Player &operator=(const Player &other)
+  {
+    this->name = other.name;
+    this->betting_amount = other.betting_amount;
+    return *this;
+  }
+
   friend std::ostream &operator<<(std::ostream &os, const Player &p)
   {
-    os << p.name << ' ' << p.betting_amount;
+    os << "This player has the name: " << p.name << " and has " << p.betting_amount << " credits to bet.\n";
     return os;
   }
 };
@@ -233,10 +254,11 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const Game &g)
   {
-    os << g.name << "\nBet amounts:\n";
+    os << g.name << " has " << g.bet_amounts.size() << " bet amounts:\n";
     for(auto x : bet_amounts) {
       os << x << ' ';
     }
+    os << '\n';
     return os;
   }
 };
@@ -325,7 +347,7 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const Machine &m)
   {
-    os << m.name;
+    os << m.name << " is a machine with " << m.games.size() << " games.\n";
     return os;
   }
 };
@@ -417,7 +439,7 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const Casino &c)
   {
-    os << c.name;
+    os << c.name << " is a casino with " << c.machines.size() << " machines and " << c.players.size() << " players.\n";
     return os;
   }
 };
@@ -446,6 +468,15 @@ public:
     {
       app_texture_size = app_texture.getSize();
     }
+  }
+
+  Application &operator=(const Application& other) {
+    this->name = other.name;
+    //this->window = other.window;
+    this->app_texture = other.app_texture;
+    this->app_texture_size = other.app_texture_size;
+    this->app_sprite = other.app_sprite;
+    return *this;
   }
 
   void run()
@@ -515,7 +546,7 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const Application &a)
   {
-    os << a.name;
+    os << a.name << " is an application with " << a.casinos.size() << " casinos.\n";
     return os;
   }
 };
