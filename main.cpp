@@ -68,6 +68,8 @@ public:
     return *this;
   }
 
+  ~Button() {}
+
   friend std::ostream &operator<<(std::ostream &os, const Button &b)
   {
     os << "This button has the text: " << b.text_content << ".\n";
@@ -86,6 +88,8 @@ public:
     this->buttons = other.buttons;
     return *this;
   }
+
+  ~Buttons() {}
 
   friend std::ostream &operator<<(std::ostream &os, const Buttons &b)
   {
@@ -109,6 +113,8 @@ public:
     this->betting_amount = other.betting_amount;
     return *this;
   }
+
+  ~Player() {}
 
   friend std::ostream &operator<<(std::ostream &os, const Player &p)
   {
@@ -469,6 +475,8 @@ public:
       app_texture_size = app_texture.getSize();
     }
   }
+
+  ~Application() {}
 
   Application &operator=(const Application& other) {
     this->name = other.name;
