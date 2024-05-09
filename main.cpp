@@ -72,7 +72,7 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const Button &b)
   {
-    os << "This button has the text: " << b.text_content << ".\n";
+    os << "This button has the text: " << b.text_content << " and the positions: x = " << b.rect.getSize().x << " and y = " << b.rect.getSize().y << ".\n";
     return os;
   }
 };
@@ -260,9 +260,13 @@ public:
 
   friend std::ostream &operator<<(std::ostream &os, const Game &g)
   {
-    os << g.name << " has " << g.bet_amounts.size() << " bet amounts:\n";
+    os << g.name << " has " << g.bet_amounts.size() << " bet amounts: ";
     for(auto x : bet_amounts) {
       os << x << ' ';
+    }
+    os << ", " << g.reels.size() << " reels and " << g.symbols.size() << " symbols: ";
+    for(auto symbol: g.symbols) {
+      os << symbol << ' ';
     }
     os << '\n';
     return os;
