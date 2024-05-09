@@ -33,6 +33,10 @@ public:
     rect.setFillColor(normalColor);
   }
 
+  Button(const Button& other) : text(other.text), rect(other.rect), normalColor(other.normalColor), hoverColor(other.hoverColor), text_content(other.text_content) {
+    std::cout << "Constructor de copiere Button\n";
+  }
+
   bool isMouseOver(sf::RenderWindow &window)
   {
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -89,6 +93,10 @@ public:
     return *this;
   }
 
+  Buttons(const Buttons& other) : buttons(other.buttons) {
+    std::cout << "Constructor de copiere Buttons\n";
+  }
+
   ~Buttons() {}
 
   friend std::ostream &operator<<(std::ostream &os, const Buttons &b)
@@ -106,6 +114,10 @@ private:
 
 public:
   Player(const std::string& n = "Player", double ba = 0) : name(n), betting_amount(ba) {}
+
+  Player(const Player& other) : name(other.name), betting_amount(other.betting_amount) {
+    std::cout << "Constructor de copiere Player\n";
+  }
 
   Player &operator=(const Player &other)
   {
@@ -151,6 +163,10 @@ public:
       game_texture_size = game_texture.getSize();
       game_sprite = sf::Sprite(game_texture);
     }
+  }
+
+  Game(const Game& other) : name(other.name), game_texture(other.game_texture), game_texture_size(other.game_texture_size), game_sprite(other.game_sprite), reels(other.reels), symbols(other.symbols) {
+    std::cout << "Constructor de copiere Game\n";
   }
 
   Game &operator=(const Game &other)
@@ -295,6 +311,10 @@ public:
     {
       machine_texture_size = machine_texture.getSize();
     }
+  }
+  
+  Machine(const Machine& other) : name(other.name), games(other.games),  machine_texture(other.machine_texture), machine_texture_size(other.machine_texture_size), machine_sprite(other.machine_sprite) {
+    std::cout << "Constructor de copiere Machine\n";
   }
 
   Machine &operator=(const Machine &other)
