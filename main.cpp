@@ -389,6 +389,10 @@ public:
     }
   }
 
+  Casino(const Casino& other) : name(other.name), machines(other.machines), players(other.players), casino_texture(other.casino_texture), casino_texture_size(other.casino_texture_size), casino_sprite(other.casino_sprite) {
+    std::cout << "Constructor de copiere Casino\n";
+  }
+
   Casino &operator=(const Casino& other) {
     this->name = other.name;
     this->machines = other.machines;
@@ -489,6 +493,10 @@ public:
     this->app_texture_size = other.app_texture_size;
     this->app_sprite = other.app_sprite;
     return *this;
+  }
+
+  Application(const Application& other) : name(other.name), casinos(other.casinos), app_texture(other.app_texture), app_texture_size(other.app_texture_size), app_sprite(other.app_sprite) {
+    std::cout << "Constructor de copiere Application\n";
   }
 
   void run()
