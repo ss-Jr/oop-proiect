@@ -95,7 +95,8 @@ void Game::run(sf::RenderWindow& window, Buttons& buttons) {
                         spin();
                         if (displayResult()) {
                             std::cout << "Congratulations! You won!\n";
-                            if (dynamic_cast<Game*>(this)) {
+                            if (Game* gamePtr = dynamic_cast<Game*>(this)) {
+                                delete gamePtr;
                                 sound.play();
                                 sf::Clock clock;
                                 while (clock.getElapsedTime().asSeconds() < durationInSeconds) {}
