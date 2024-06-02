@@ -22,11 +22,11 @@ public:
 
     Application& operator=(const Application& other);
 
-    Application(const Application& other);
-
-    //void run(sf::RenderWindow& window, Buttons& buttons) override {}
+    Application(const Application& other); 
 
     void run() override;
+
+    void run(sf::RenderWindow& window, Buttons& buttons) override {}
 
     friend std::ostream& operator<<(std::ostream& os, const Application& a);
 };
