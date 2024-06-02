@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "ButtonException.h"
+#include <SFML/Graphics/RenderWindow.hpp>
 #include <iostream>
 
 Application::Application(const std::string& name_) : Location(name_), casinos(std::vector<Casino>(1, Casino("Casino"))), window(sf::VideoMode(800, 600), name_, sf::Style::Default) {
@@ -28,13 +29,13 @@ Application::Application(const Application& other) : Location(other), casinos(ot
     std::cout << "Copy constructor Application\n";
 }
 
-void Application::run() {
+void Application::run(sf::RenderWindow& window, Buttons& buttons) {
     sf::Font font;
     if (!font.loadFromFile("Arial.ttf")) {
         std::cout << "Could not load font.\n";
         return;
     }
-    Buttons buttons;
+    Buttons b;
     try {
         buttons = Buttons({
             {"exit_app", Button(font, 10, 10, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 30, 30, "EXIT")},
@@ -63,10 +64,10 @@ void Application::run() {
 
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    if (buttons.buttons["enter_casino"].isMouseOver(window)) {
+                    if (b.buttons["enter_casino"].isMouseOver(window)) {
                         std::cout << "Entered in casino!\n";
-                        casinos[0].run(window, buttons);
-                    } else if (buttons.buttons["exit_app"].isMouseOver(window)) {
+                        casinos[0].run(window, b);
+                    } else if (b.buttons["exit_app"].isMouseOver(window)) {
                         std::cout << "Closed the application!\n";
                         return;
                     }
@@ -77,12 +78,12 @@ void Application::run() {
                 break;
             }
         }
-        buttons.buttons["enter_casino"].update(window);
-        buttons.buttons["exit_app"].update(window);
+        b.buttons["enter_casino"].update(window);
+        b.buttons["exit_app"].update(window);
         window.clear();
         window.draw(app_sprite);
-        window.draw(buttons.buttons["enter_casino"]);
-        window.draw(buttons.buttons["exit_app"]);
+        window.draw(b.buttons["enter_casino"]);
+        window.draw(b.buttons["exit_app"]);
         window.display();
     }
 }

@@ -1,10 +1,13 @@
 #include "Project.h"
+#include <SFML/Graphics/RenderWindow.hpp>
 #include <iostream>
 
 Project::Project(std::unique_ptr<Application> ptr_) : ptr(std::move(ptr_)) {}
 
 void Project::start() const {
-    ptr->run();
+    Buttons b;
+    sf::RenderWindow w;
+    ptr->run(w, b);
 }
 
 Project& Project::operator=(Project other) {
