@@ -24,7 +24,7 @@ public:
 
     Application(const Application& other);
 
-    void run(sf::RenderWindow& window, Buttons& buttons) override {}
+    //void run(sf::RenderWindow& window, Buttons& buttons) override {}
 
     void run() override;
 

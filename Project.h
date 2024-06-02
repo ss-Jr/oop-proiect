@@ -8,7 +8,7 @@ class Project {
 private:
     std::unique_ptr<Application> ptr;
 public:
-    Project(std::unique_ptr<Application> ptr_);
+    explicit Project(std::unique_ptr<Application> ptr_);
 
     void start() const;
 
