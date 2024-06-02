@@ -17,6 +17,8 @@ public:
     virtual void run(sf::RenderWindow& window, Buttons& buttons) = 0;
     virtual Location* clone() const = 0;
 
+    Location& operator=(const Location& other);
+
     static int locationCount;
 
     Location(const Location& other);

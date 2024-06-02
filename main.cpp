@@ -22,6 +22,7 @@ int main() {
     try {
         auto app = std::make_unique<Application>("Pacanea");
         auto cloned_app = app->clone();
+        delete cloned_app;
         Project project(std::move(app));
         project.start();
     } catch (const CasinoException& e) {

@@ -33,7 +33,7 @@ Application::Application(const Application& other) : Location(other), casinos(ot
     std::cout << "Copy constructor Application\n";
 }
 
-void Application::run(sf::RenderWindow& w, Buttons& buttons) {
+void Application::run(sf::RenderWindow&, Buttons&) {
     sf::Font font;
     if (!font.loadFromFile("Arial.ttf")) {
         std::cout << "Could not load font.\n";
@@ -41,7 +41,7 @@ void Application::run(sf::RenderWindow& w, Buttons& buttons) {
     }
     Buttons b;
     try {
-        buttons = Buttons({
+        b = Buttons({
             {"exit_app", Button(font, 10, 10, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 30, 30, "EXIT")},
             {"enter_casino", Button(font, 100, 100, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 120, 120, "Enter Casino")},
             {"return_app", Button(font, 10, 10, 220, 50, sf::Color{ 0x0036B1FF }, sf::Color{ 0x00339AFF }, 30, 30, "Return to App")},
