@@ -18,7 +18,11 @@ Location* Application::clone() const {
 Application::~Application() {}
 
 Application& Application::operator=(const Application& other) {
+    if (this == &other)
+        return *this;
     Location::operator=(other);
+    this->casinos = other.casinos;
+    //this->window = other.window;
     this->app_texture = other.app_texture;
     this->app_texture_size = other.app_texture_size;
     this->app_sprite = other.app_sprite;
@@ -29,7 +33,7 @@ Application::Application(const Application& other) : Location(other), casinos(ot
     std::cout << "Copy constructor Application\n";
 }
 
-void Application::run(sf::RenderWindow& window, Buttons& buttons) {
+void Application::run(sf::RenderWindow& w, Buttons& buttons) {
     sf::Font font;
     if (!font.loadFromFile("Arial.ttf")) {
         std::cout << "Could not load font.\n";
@@ -90,5 +94,6 @@ void Application::run(sf::RenderWindow& window, Buttons& buttons) {
 
 std::ostream& operator<<(std::ostream& os, const Application& a) {
     os << a.name << " is an application with " << a.casinos.size() << " casinos.\n";
+    os << "Location number: " << Application::getLocationCount() << '\n';
     return os;
 }

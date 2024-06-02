@@ -18,6 +18,8 @@ Machine::Machine(const Machine& other) : Location(other), games(other.games), ma
 }
 
 Machine& Machine::operator=(const Machine& other) {
+    if (this == &other)
+        return *this;
     Location::operator=(other);
     this->games = other.games;
     this->machine_texture = other.machine_texture;

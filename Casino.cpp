@@ -18,6 +18,8 @@ Casino::Casino(const Casino& other) : Location(other), machines(other.machines),
 }
 
 Casino& Casino::operator=(const Casino& other) {
+    if (this == &other)
+        return *this;
     Location::operator=(other);
     this->machines = other.machines;
     this->players = other.players;

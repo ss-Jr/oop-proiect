@@ -22,6 +22,8 @@ Game::Game(const Game& other) : Location(other), game_texture(other.game_texture
 }
 
 Game& Game::operator=(const Game& other) {
+    if (this == &other)
+        return *this;
     Location::operator=(other);
     this->game_texture = other.game_texture;
     this->game_texture_size = other.game_texture_size;
