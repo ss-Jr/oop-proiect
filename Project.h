@@ -25,14 +25,14 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, Project& p) {
       os << "\nPlayeri dependenti:";
-      for(auto p: p.getPlayers()) {
-        if(auto player = dynamic_cast<PlayerDependent*>(p)) {
+      for(auto e: p.getPlayers()) {
+        if(auto const player = dynamic_cast<PlayerDependent*>(e)) {
           os << *player;
         }
       }
       os << "\nPlayeri nedependenti:";
-      for(auto p: p.getPlayers()) {
-        if(auto player = dynamic_cast<PlayerNedependent*>(p)) {
+      for(auto e: p.getPlayers()) {
+        if(auto const player = dynamic_cast<PlayerNedependent*>(e)) {
           os << *player;
         }
       }
