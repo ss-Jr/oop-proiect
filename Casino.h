@@ -4,12 +4,10 @@
 #include <SFML/Graphics.hpp>
 #include "Location.h"
 #include "Machine.h"
-#include "Player.h"
 
 class Casino : public Location {
 private:
     std::vector<Machine> machines;
-    std::vector<Player> players;
     sf::Texture casino_texture;
     sf::Vector2u casino_texture_size;
     sf::Sprite casino_sprite;

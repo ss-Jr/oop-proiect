@@ -5,16 +5,21 @@
 #include <iostream>
 
 class Player {
-private:
+protected:
     std::string name;
     double balance;
 
 public:
     Player(const std::string& name_ = "Player", double balance_ = 1000) : name(name_), balance(balance_) {}
+    virtual ~Player() = default;
 
-    friend std::ostream& operator<<(std::ostream& os, const Player& p) {
-        os << "Player " << p.name << " has a balance of $" << p.balance << ".\n";
-        return os;
+    virtual std::istream& read(std::istream& is) = 0;
+    virtual std::ostream& write(std::ostream& os) = 0;
+    friend std::istream& operator>>(std::istream& is, Player& p) {
+      return p.read(is);
+    }
+    friend std::ostream& operator<<(std::ostream& os, Player& p) {
+      return p.write(os);
     }
 };
 

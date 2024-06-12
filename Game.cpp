@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "GameException.h"
 #include <iostream>
 #include <SFML/Audio.hpp>
 
@@ -6,7 +7,7 @@ std::vector<double> Game::bet_amounts;
 
 Game::Game(const std::string& name_) : Location(name_) {
     if (!game_texture.loadFromFile("game.jpg")) {
-        std::cout << "Could not load game textures.\n";
+        throw GameException();
     } else {
         game_texture_size = game_texture.getSize();
         game_sprite = sf::Sprite(game_texture);

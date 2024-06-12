@@ -18,3 +18,11 @@ Project& Project::operator=(Project other) {
 void swap(Project& p1, Project& p2) {
     std::swap(p1.ptr, p2.ptr);
 }
+
+void Project::setPlayer(Player* p) {
+  players.push_back(p);
+}
+
+std::vector<Player*> Project::getPlayers() {
+  return players;
+}

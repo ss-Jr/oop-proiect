@@ -5,8 +5,9 @@
 #include "Location.h"
 #include "Casino.h"
 
-class Application : public Location {
+class Application {
 private:
+    std::string name;
     std::vector<Casino> casinos;
     sf::RenderWindow window;
     sf::Texture app_texture;
@@ -16,7 +17,7 @@ private:
 public:
     Application(const std::string& name_ = "Pacanea");
 
-    Location* clone() const override;
+    Application* clone() const;
 
     ~Application();
 
@@ -24,9 +25,7 @@ public:
 
     Application(const Application& other);
 
-    void run() override {}
-
-    void run(sf::RenderWindow& window, Buttons& buttons) override;
+    void run(sf::RenderWindow& window, Buttons& buttons);
 
     friend std::ostream& operator<<(std::ostream& os, const Application& a);
 };

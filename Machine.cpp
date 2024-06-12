@@ -1,9 +1,10 @@
 #include "Machine.h"
+#include "MachineException.h"
 #include <iostream>
 
 Machine::Machine(const std::string& name_) : Location(name_), games(std::vector<Game>(1, Game("Slot Game"))) {
     if (!machine_texture.loadFromFile("games.jpg")) {
-        std::cout << "Could not load slot machine textures.\n";
+        throw MachineException();
     } else {
         machine_texture_size = machine_texture.getSize();
     }

@@ -1,6 +1,7 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
+#include "ButtonException.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
@@ -18,11 +19,15 @@ public:
     Button(sf::Font& font_, float x, float y, float width, float height, sf::Color color, sf::Color hoverColor, int pos_x = 0, int pos_y = 0, const std::string& text_content_ = "Button")
         : rect(sf::Vector2f(width, height)), normalColor(color), hoverColor(hoverColor), text_content(text_content_)
     {
+      try {
         text = sf::Text(text_content, font_, 24);
         text.setFillColor(sf::Color::White);
         text.setPosition(pos_x, pos_y);
         rect.setPosition(x, y);
         rect.setFillColor(normalColor);
+      } catch(...) {
+        throw ButtonException();
+      }
     }
 
     Button(const Button& other) : text(other.text), rect(other.rect), normalColor(other.normalColor), hoverColor(other.hoverColor), text_content(other.text_content) {
